@@ -25,4 +25,5 @@ class TestRegistration(TestCase):
             'birthdate': '2019-05-27T16:30:15.970340'
         }
         res = self.client.post(url_for('registration.sign_up'), json=user_data)
+        import ipdb; ipdb.set_trace()
         self.assertEqual(res.status_code, 201)

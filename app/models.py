@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-import jwt
+from flask_jwt_extended import (create_access_token,
+                                create_refresh_token)
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, Integer, Date, ForeignKey
@@ -28,19 +29,11 @@ class User(db.Model):
 
     def authenticate(self, password: str):
         """Authenticates the user and generates a token"""
-        if check_password_hash(self.password, password):
-            return self.generate_token()
+        access_token = create_access_token(identity=self.id)
+        refresh_token = create_refresh_token(identity=self.id)
+        return {'access_token': access_token,
+                'refresh_token': refresh_token}
 
-    def generate_token(self):
-        """
-        Generates the JWT token with a 20min expiration and the user id.
-        """
-        expiration = datetime.utcnow() + timedelta(minutes=20)
-        payload = {
-            'exp': expiration,
-            'user': self.id
-        }
-        return jwt.encode(payload, current_app.secret_key).decode('utf-8')
 
 class MovieGenre(db.Model):
     id = Column(Integer, primary_key=True)
